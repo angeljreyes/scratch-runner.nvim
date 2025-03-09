@@ -96,8 +96,15 @@ you can switch between the two with `<Tab>`.
 <h2 id="default-config">Default Config</h2>
 
 ```lua
-{
-  -- TODO: Add config options.
+---@class scratch-runner.Config
+H.config = {
+    ---Key that runs the scratch buffer.
+    ---@type string?
+    run_key = "<CR>",
+
+    ---Key that switches between stdout and stderr.
+    ---@type string?
+    output_switch_key = "<Tab>",
 }
 ```
 

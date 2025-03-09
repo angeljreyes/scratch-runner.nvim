@@ -1,13 +1,32 @@
 ---@module "snacks"
 
 local M = {}
+local H = {}
+
+---@class scratch-runner.Config
+H.config = {
+    ---Key that runs the scratch buffer.
+    ---@type string?
+    run_key = "<CR>",
+
+    ---Key that switches between stdout and stderr.
+    ---@type string?
+    output_switch_key = "<Tab>",
+}
+
+---@param opts scratch-runner.Config?
+M.setup = function(opts)
+    H.config = vim.tbl_deep_extend("force", H.config, opts or {})
+end
 
 ---@param cmd string[] | fun(filepath: string): string[]
+---@param opts scratch-runner.Config?
 ---@return snacks.win.Keys
-M.make_key = function(cmd)
-    ---@type snacks.win.Keys
+M.make_key = function(cmd, opts)
+    opts = opts or H.config
+
     return {
-        "<cr>",
+        opts.run_key,
         ---@param window snacks.win
         function(window)
             vim.cmd("silent w")
@@ -81,17 +100,17 @@ M.make_key = function(cmd)
                             { " Code Output " },
                         }
                         result_window.opts.footer = {}
-                        footer_insert_key("<Tab>", "Show stderr")
+                        footer_insert_key(opts.output_switch_key, "Show stderr")
                         footer_add_close()
-                        vim.keymap.set("n", "<tab>", function()
+                        vim.keymap.set("n", opts.output_switch_key, function()
                             result_window.opts.footer = {}
                             vim.bo[result_window.buf].modifiable = true
                             if showing_stderr then
                                 vim.api.nvim_buf_set_lines(result_window.buf, 0, -1, false, stdout)
-                                footer_insert_key("<Tab>", "Show stderr")
+                                footer_insert_key(opts.output_switch_key, "Show stderr")
                             else
                                 vim.api.nvim_buf_set_lines(result_window.buf, 0, -1, false, stderr)
-                                footer_insert_key("<Tab>", "Show stdout")
+                                footer_insert_key(opts.output_switch_key, "Show stdout")
                             end
                             vim.bo[result_window.buf].modifiable = false
                             footer_add_close()
@@ -117,14 +136,15 @@ end
 
 ---Make the `win_by_ft` option.
 ---@param filetypes table<string, string[] | fun(filepath: string): string[]>
+---@param opts scratch-runner.Config?
 ---@return table<string, snacks.win.Config>
-M.make_win_by_ft = function(filetypes)
+M.make_win_by_ft = function(filetypes, opts)
     ---@type table<string, snacks.win.Config>
     local win_by_ft = {}
 
     for ft, cmd in pairs(filetypes) do
         ---@diagnostic disable-next-line: missing-fields
-        win_by_ft[ft] = { keys = { run = M.make_key(cmd) } }
+        win_by_ft[ft] = { keys = { run = M.make_key(cmd, opts) } }
     end
 
     return win_by_ft
