@@ -15,9 +15,7 @@ H.config = {
 }
 
 ---@param opts scratch-runner.Config?
-M.setup = function(opts)
-    H.config = vim.tbl_deep_extend("force", H.config, opts or {})
-end
+M.setup = function(opts) H.config = vim.tbl_deep_extend("force", H.config, opts or {}) end
 
 ---@param cmd string[] | fun(filepath: string): string[]
 ---@param opts scratch-runner.Config?
@@ -68,11 +66,18 @@ M.make_key = function(cmd, opts)
             end
 
             local footer_add_close = function() footer_insert_key("q", "Go back") end
+            local running = true
+            local killed = false
 
-            vim.system(
+            local process = vim.system(
                 final_cmd,
                 { text = true },
                 vim.schedule_wrap(function(output)
+                    running = false
+                    if killed then
+                        return
+                    end
+
                     local stdout, stderr
                     if output.stdout and output.stdout ~= "" then
                         stdout = vim.split(output.stdout, "\n")
@@ -129,6 +134,18 @@ M.make_key = function(cmd, opts)
                     result_window:update()
                 end)
             )
+
+            vim.keymap.set("n", "q", function()
+                if running then
+                    process:kill(15)
+                    killed = true
+                end
+                result_window:close()
+            end, { desc = "Cancel", buffer = result_window.buf })
+
+            result_window.opts.footer = {}
+            footer_insert_key("q", "Stop")
+            result_window:update()
         end,
         desc = "Run buffer",
     }
