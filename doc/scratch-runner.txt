@@ -1,0 +1,115 @@
+*scratch-runner.txt*
+*scratch-runner.nvim*
+*scratch-runner*
+
+==============================================================================
+Contents                                             *scratch-runner-contents*
+
+    1. Configuration                                   |scratch-runner-config|
+    2. Functions                                    |scratch-runner-functions|
+
+==============================================================================
+1. Configuration                                       *scratch-runner-config*
+
+You can configure the plugin's behavior by passing a table with options to
+|scratch-runner.setup()|. Calling this method is not needed for the plugin to
+work.
+
+Example: ~
+>lua
+    require("scratch-runner").setup({
+        run_key = "<C-t>",
+        output_switch_key = "<CR>",
+    })
+<
+
+Default configuration                          *scratch-runner-default-config*
+>lua
+    {
+        ---Key that runs the scratch buffer.
+        ---@type string?
+        run_key = "<CR>",
+
+        ---Key that switches between stdout and stderr.
+        ---@type string?
+        output_switch_key = "<Tab>",
+    }
+<
+
+==============================================================================
+2. Functions                                        *scratch-runner-functions*
+
+scratch-runner.setup({opts})                          *scratch-runner.setup()*
+    See |scratch-runner.config|
+
+    Parameters: ~
+      • {opts}?  (`table`): Configuration options.
+                 See |scratch-runner-default-config| for all options.
+
+    Usage: ~
+    >lua
+        require("scratch-runner").setup({
+            -- Your options go here
+        })
+<
+    
+scratch-runner.make_key({cmd}, {opts})             *scratch-runner.make_key()*
+    Makes a keymap that runs your code.
+
+    Parameters: ~
+      • {cmd}    (`string[] | fun(filepath: string): string[]`)
+                 Command to run the file through. If it's a list of strings,
+                 the path to the scratch file will be appended to the end
+                 automatically. If it's a function, it will take the filepath
+                 as a parameter and return a list of strings.
+
+      • {opts}?  (`scratch-runner.Config`) Config for this function.
+                 See |scratch-runner.default-config|.
+
+    Usage: ~
+      In your `snacks.nvim` config:
+    >lua
+        {
+          scratch = {
+            win_by_ft = {
+              javascript = {
+                keys = {
+                  run = require("scratch-runner").make_key({ "node" })
+                },
+              },
+            },
+          },
+        }
+<
+
+                                             *scratch-runner.make_win_by_ft()*
+scratch-runner.make_win_by_ft({cmd}, {opts})
+    Makes keymaps that run your code per filetype.
+
+    Parameters: ~
+      • {filetypes}  (`table<
+                        `string`,
+                        `string[] | fun(filepath: string): string[]`
+                     `>`)
+                     A table with each filetype you want to set up and its
+                     cmd. See {cmd} in |scratch-runner.make_key()|.
+
+      • {opts}?      (`scratch-runner.Config`) Config for this function.
+                     See |scratch-runner.default-config|.
+
+    Usage: ~
+      In your `snacks.nvim` config:
+    >lua
+        {
+          scratch = {
+            win_by_ft = require("scratch-runner").make_win_by_ft({
+              javascript = { "node" },
+              -- "py" or "python" if you are on Windows
+              python = { "python3" },
+            }),
+          },
+        }
+<
+
+
+vim:tw=78:ts=8:et:ft=help:norl:
