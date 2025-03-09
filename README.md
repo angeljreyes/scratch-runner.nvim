@@ -20,13 +20,75 @@ Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/mai
   ```lua
   {
     "DestopLine/scratch-runner.nvim",
-    dependencies = "folke/snacks.nvim"
+    dependencies = "folke/snacks.nvim",
+
     -- Optional
     opts = {
       -- Your options go here
     },
   }
   ```
+
+</details>
+
+<details>
+  <summary>With 
+    <a href="https://github.com/echasnovski/mini.deps">mini.deps</a>
+  </summary>
+
+  ```lua
+  MiniDeps.add({
+    source = "DestopLine/scratch-runner.nvim",
+    depends = "folke/snacks.nvim",
+  })
+
+  -- Optional
+  require("scratch-runner").setup({
+    -- Your options go here
+  })
+  ```
+
+</details>
+
+<details>
+  <summary>With 
+    <a href="https://github.com/wbthomason/packer.nvim">packer.nvim</a>
+  </summary>
+
+  ```lua
+  use({
+    "DestopLine/scratch-runner.nvim",
+    after = "snacks.nvim",
+
+    -- Optional
+    config = function()
+      require("scratch-runner").setup({
+        -- Your options go here
+      })
+    end,
+  })
+  ```
+
+</details>
+
+<details>
+  <summary>With 
+    <a href="https://github.com/junegunn/vim-plug">vim-plug</a>
+  </summary>
+
+  ```vim
+  Plug 'DestopLine/scratch-runner.nvim'
+
+  " Optional
+  lua << EOF
+  require("scratch-runner").setup({
+    -- Your options go here
+  })
+  EOF
+  ```
+
+> [!IMPORTANT]
+> You must `Plug 'folke/snacks.nvim'` before this plugin.
 
 </details>
 
