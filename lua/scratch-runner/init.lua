@@ -17,8 +17,9 @@ H.config = {
 ---@param opts scratch-runner.Config?
 M.setup = function(opts) H.config = vim.tbl_deep_extend("force", H.config, opts or {}) end
 
----@param cmd string[] | fun(filepath: string): string[]
----@param opts scratch-runner.Config?
+---Makes a keymap that runs your code.
+---@param cmd string[] | fun(filepath: string): string[] Command to run the file through.
+---@param opts scratch-runner.Config? Config for this function.
 ---@return snacks.win.Keys
 M.make_key = function(cmd, opts)
     opts = opts or H.config
@@ -152,8 +153,8 @@ M.make_key = function(cmd, opts)
 end
 
 ---Make the `win_by_ft` option.
----@param filetypes table<string, string[] | fun(filepath: string): string[]>
----@param opts scratch-runner.Config?
+---@param filetypes table<string, string[] | fun(filepath: string): string[]> Filetypes as keys, cmds as values.
+---@param opts scratch-runner.Config? Config for this function.
 ---@return table<string, snacks.win.Config>
 M.make_win_by_ft = function(filetypes, opts)
     ---@type table<string, snacks.win.Config>
