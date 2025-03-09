@@ -43,7 +43,7 @@ M.make_key = function(cmd, opts)
             end
 
             if vim.fn.executable(final_cmd[1]) == 0 then
-                vim.notify(final_cmd[1] .. " wasn't found on your system.", vim.log.levels.ERROR)
+                vim.notify("'" .. final_cmd[1] .. "' wasn't found on your system.", vim.log.levels.ERROR, { title = "scratch-runner.nvim" })
                 return
             end
 
