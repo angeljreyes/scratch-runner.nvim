@@ -3,6 +3,8 @@
 local M = {}
 local H = {}
 
+---@alias scratch-runner.SourceSpec string[] | (fun(filepath: string): string[])
+
 ---@class scratch-runner.Config
 H.config = {
     ---Key that runs the scratch buffer.
@@ -12,13 +14,23 @@ H.config = {
     ---Key that switches between stdout and stderr.
     ---@type string?
     output_switch_key = "<Tab>",
+
+    ---@type table<string, scratch-runner.SourceSpec>
+    sources = {},
 }
 
 ---@param opts scratch-runner.Config?
-M.setup = function(opts) H.config = vim.tbl_deep_extend("force", H.config, opts or {}) end
+M.setup = function(opts)
+    H.config = vim.tbl_deep_extend("force", H.config, opts or {})
+
+    if not vim.tbl_isempty(H.config.sources) then
+        local win_by_ft = M.make_win_by_ft(H.config.sources)
+        Snacks.config.scratch.win_by_ft = vim.tbl_deep_extend("force", Snacks.config.scratch.win_by_ft or {}, win_by_ft)
+    end
+end
 
 ---Makes a keymap that runs your code.
----@param cmd string[] | fun(filepath: string): string[] Command to run the file through.
+---@param cmd scratch-runner.SourceSpec Command to run the file through.
 ---@param opts scratch-runner.Config? Config for this function.
 ---@return snacks.win.Keys
 M.make_key = function(cmd, opts)
@@ -43,14 +55,18 @@ M.make_key = function(cmd, opts)
             end
 
             if vim.fn.executable(final_cmd[1]) == 0 then
-                vim.notify("'" .. final_cmd[1] .. "' wasn't found on your system.", vim.log.levels.ERROR, { title = "scratch-runner.nvim" })
+                vim.notify(
+                    "'" .. final_cmd[1] .. "' wasn't found on your system.",
+                    vim.log.levels.ERROR,
+                    { title = "scratch-runner.nvim" }
+                )
                 return
             end
 
             local result_window = Snacks.win({
                 style = "scratch",
                 height = Snacks.config.scratch.win.height,
-                width = Snacks.config.scratch.win.width,
+                width = Snacks.config.scratch.win.width --[[@as number]],
                 zindex = 30,
                 title = " Running... ",
                 ft = "text",
@@ -153,14 +169,14 @@ M.make_key = function(cmd, opts)
 end
 
 ---Make the `win_by_ft` option.
----@param filetypes table<string, string[] | fun(filepath: string): string[]> Filetypes as keys, cmds as values.
+---@param sources table<string, scratch-runner.SourceSpec> Filetypes as keys, cmds as values.
 ---@param opts scratch-runner.Config? Config for this function.
 ---@return table<string, snacks.win.Config>
-M.make_win_by_ft = function(filetypes, opts)
+M.make_win_by_ft = function(sources, opts)
     ---@type table<string, snacks.win.Config>
     local win_by_ft = {}
 
-    for ft, cmd in pairs(filetypes) do
+    for ft, cmd in pairs(sources) do
         ---@diagnostic disable-next-line: missing-fields
         win_by_ft[ft] = { keys = { run = M.make_key(cmd, opts) } }
     end
