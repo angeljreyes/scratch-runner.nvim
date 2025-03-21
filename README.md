@@ -2,7 +2,7 @@
 Library plugin for quickly adding running capabilities to your `snacks.scratch`
 configuration.
 
-https://github.com/user-attachments/assets/8671ecd1-9db2-41db-a6bb-e7bfadcb0920
+https://github.com/user-attachments/assets/dfe81c00-51e1-45c2-836d-2649e128ee4b
 
 ## Requirements
 Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/main#%EF%B8%8F-requirements).
