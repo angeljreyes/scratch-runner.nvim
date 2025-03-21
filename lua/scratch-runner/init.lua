@@ -15,6 +15,7 @@ H.config = {
     ---@type string?
     output_switch_key = "<Tab>",
 
+    ---Commands that run your script. See :h scratch-runner.SourceSpec
     ---@type table<string, scratch-runner.SourceSpec>
     sources = {},
 }

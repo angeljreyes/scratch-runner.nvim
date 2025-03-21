@@ -6,7 +6,7 @@
 Contents                                             *scratch-runner-contents*
 
     1. Configuration                                   |scratch-runner-config|
-    2. Functions                                    |scratch-runner-functions|
+    2. Types                                            |scratch-runner-types|
 
 ==============================================================================
 1. Configuration                                       *scratch-runner-config*
@@ -33,83 +33,44 @@ Default configuration                          *scratch-runner-default-config*
         ---Key that switches between stdout and stderr.
         ---@type string?
         output_switch_key = "<Tab>",
+
+        ---Commands that run your script. See :h scratch-runner.SourceSpec
+        ---@type table<string, scratch-runner.SourceSpec>
+        sources = {},
     }
 <
 
+
 ==============================================================================
-2. Functions                                        *scratch-runner-functions*
+2. Types                                                *scratch-runner-types*
 
-scratch-runner.setup({opts})                          *scratch-runner.setup()*
-    See |scratch-runner.config|
+SourceSpec                                         *scratch-runner.SourceSpec*
+    The command that will run your script.
 
-    Parameters: ~
-      • {opts}?  (`table`): Configuration options.
-                 See |scratch-runner-default-config| for all options.
+    This can be one of the following:
+      • (`string[]`) A list of strings with the command. The path to the
+        scratch file will be appended to the command.
 
-    Usage: ~
-    >lua
-        require("scratch-runner").setup({
-            -- Your options go here
-        })
+        Example: ~
+        >lua
+            { "node" }
+<
+
+      • (`fun(filepath: string): string[]`) A function that receives the path
+        to the scratch file and returns the command to run.
+
+        Example: ~
+        >lua
+            function(filepath)
+                local on_windows = vim.uv.os_uname().sysname == "Windows_NT"
+                return {
+                    on_windows and "py" or "python3",
+                    filepath,
+                    "-",
+                    vim.version().build, -- Pass Neovim version as an argument
+                }
+            end
 <
     
-scratch-runner.make_key({cmd}, {opts})             *scratch-runner.make_key()*
-    Makes a keymap that runs your code.
-
-    Parameters: ~
-      • {cmd}    (`string[] | fun(filepath: string): string[]`)
-                 Command to run the file through. If it's a list of strings,
-                 the path to the scratch file will be appended to the end
-                 automatically. If it's a function, it will take the filepath
-                 as a parameter and return a list of strings.
-
-      • {opts}?  (`scratch-runner.Config`) Config for this function.
-                 See |scratch-runner.default-config|.
-
-    Usage: ~
-      In your `snacks.nvim` config:
-    >lua
-        {
-          scratch = {
-            win_by_ft = {
-              javascript = {
-                keys = {
-                  run = require("scratch-runner").make_key({ "node" })
-                },
-              },
-            },
-          },
-        }
-<
-
-                                             *scratch-runner.make_win_by_ft()*
-scratch-runner.make_win_by_ft({cmd}, {opts})
-    Makes keymaps that run your code per filetype.
-
-    Parameters: ~
-      • {filetypes}  (`table<
-                        `string`,
-                        `string[] | fun(filepath: string): string[]`
-                     `>`)
-                     A table with each filetype you want to set up and its
-                     cmd. See {cmd} in |scratch-runner.make_key()|.
-
-      • {opts}?      (`scratch-runner.Config`) Config for this function.
-                     See |scratch-runner.default-config|.
-
-    Usage: ~
-      In your `snacks.nvim` config:
-    >lua
-        {
-          scratch = {
-            win_by_ft = require("scratch-runner").make_win_by_ft({
-              javascript = { "node" },
-              -- "py" or "python" if you are on Windows
-              python = { "python3" },
-            }),
-          },
-        }
-<
-
 
 vim:tw=78:ts=8:et:ft=help:norl:
