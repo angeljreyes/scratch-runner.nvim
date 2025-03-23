@@ -34,8 +34,8 @@ Default configuration                          *scratch-runner-default-config*
         ---@type string?
         output_switch_key = "<Tab>",
 
-        ---Commands that run your script. See :h scratch-runner.SourceSpec
-        ---@type table<string, scratch-runner.SourceSpec>
+        ---Commands that run your script. See :h scratch-runner.Source
+        ---@type table<string, scratch-runner.Source | scratch-runner.SourceCommand>
         sources = {},
     }
 <
@@ -44,30 +44,60 @@ Default configuration                          *scratch-runner-default-config*
 ==============================================================================
 2. Types                                                *scratch-runner-types*
 
-SourceSpec                                         *scratch-runner.SourceSpec*
-    The command that will run your script.
+Source                                                 *scratch-runner.Source*
+    The definition for a source for running your code.
+
+    Fields: ~
+      • {1} (`scratch-runner.SourceCommand`) The command that will be executed
+        to run your code. See |scratch-runner.SourceCommand|.
+
+      • {extension}? (`string`) The file extension that the scratch file will
+        have. If this is provided, the scratch file will be copied to a
+        temporary directory with the correct file extension. This is useful
+        when a runtime/compiler is giving you an error or behaving
+        unexpectedly due to scratch files having the wrong file extension
+        (e.g. `python` instead of `py`) or having percentage signs in the file
+        name.
+
+      • {binary}? (`boolean`) Whether {1} produces an executable binary. If
+        true, the executable file produced by {1} will be executed. This is
+        the same as appending `{ bin_path }` to the end of the return table
+        of {1}. Defaults to `false`.
+
+SourceCommand                                   *scratch-runner.SourceCommand*
+    Represents the command that will run your scratch file.
 
     This can be one of the following:
       • (`string[]`) A list of strings with the command. The path to the
-        scratch file will be appended to the command.
+        scratch file will be appended to the end of the command for you.
 
         Example: ~
         >lua
             { "node" }
 <
 
-      • (`fun(filepath: string): string[]`) A function that receives the path
-        to the scratch file and returns the command to run.
+      • (`fun(file_path: string, bin_path: string): string[]`) A function that
+        receives the path to the scratch file and the path to the binary the
+        command may produce, and returns the command to run. {bin_path} is
+        provided for use with compiled languages and can be ignored if not
+        needed.
 
         Example: ~
         >lua
-            function(filepath)
-                local on_windows = vim.uv.os_uname().sysname == "Windows_NT"
+            function(file_path, bin_path)
+                return { "gcc", file_path, "-o", bin_path }
+            end
+<
+
+      • (`fun(file_path: string, bin_path: string): string[][]`) The same as
+        the previous one, but returns a list of commands to run instead.
+
+        Example: ~
+        >lua
+            function(file_path, bin_path)
                 return {
-                    on_windows and "py" or "python3",
-                    filepath,
-                    "-",
-                    vim.version().build, -- Pass Neovim version as an argument
+                    { "rustc", file_path, "-o", bin_path },
+                    { bin_path },
                 }
             end
 <

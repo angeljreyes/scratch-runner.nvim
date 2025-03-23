@@ -95,16 +95,17 @@ configuration as commands in the form of lists of strings:
 }
 ```
 
-or as a function that recieves the path to the file and returns the command:
+or as functions that recieve the path to the file and the path to a binary,
+and return the command:
 
 ```lua
 {
   sources = {
-    python = function(filepath)
+    python = function(file_path)
       local on_windows = vim.uv.os_uname().sysname == "Windows_NT"
       return {
         on_windows and "py" or "python3",
-        filepath,
+        file_path,
         "-",
         vim.version().build, -- Pass Neovim version as an argument
       }
@@ -113,11 +114,59 @@ or as a function that recieves the path to the file and returns the command:
 }
 ```
 
-When you pass a list of strings to the functions, the path to the scratch file
-gets appended automatically to the list before calling the executable. You
-can also pass a function that takes the path and returns the command
-(`fun(filepath: string): string[]`) if you wish to manage this process
-yourself.
+You can also pass either one of these to a table with extra options:
+
+```lua
+{
+  sources = {
+    typescript = {
+      { "deno" },
+      extension = "ts",
+    },
+  },
+}
+```
+
+or:
+
+```lua
+{
+  sources = {
+    rust = {
+      function(file_path, bin_path)
+        return { "rustc", file_path, "-o", bin_path }
+      end,
+      extension = "rs",
+      binary = true,
+    },
+  },
+}
+```
+
+The function can also return a list of commands. In fact, in the previous
+example, `binary = true` is just a shortcut for this:
+
+```lua
+{
+  sources = {
+    rust = {
+      function(file_path, bin_path)
+        return {
+          { "rustc", file_path, "-o", bin_path },
+          { bin_path },
+        }
+      end,
+      extension = "rs",
+    },
+  },
+}
+```
+
+When using the `extension` option, the plugin will copy the `snacks.scratch`
+file to a temporary directory with the correct file extension. This is useful
+when a runtime/compiler is giving you an error or behaving unexpectedly due to
+scratch files having the wrong file extension (e.g. `python` instead of `py`)
+or having percentage signs in the file name.
 
 When you are in a scratch window, you can press `<CR>` to run the buffer.
 You can press `q` to cancel the execution of the script while it's running.
@@ -138,8 +187,8 @@ H.config = {
     ---@type string?
     output_switch_key = "<Tab>",
 
-    ---Commands that run your script. See :h scratch-runner.SourceSpec
-    ---@type table<string, scratch-runner.SourceSpec>
+    ---Commands that run your script. See :h scratch-runner.Source
+    ---@type table<string, scratch-runner.Source | scratch-runner.SourceCommand>
     sources = {},
 }
 ```
