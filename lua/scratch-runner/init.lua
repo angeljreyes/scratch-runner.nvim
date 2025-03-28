@@ -3,7 +3,7 @@
 local M = {}
 local H = {}
 
----@class scratch-runner.Source 
+---@class scratch-runner.Source
 ---@field [1] scratch-runner.SourceCommand
 ---@field extension? string
 ---@field binary? boolean
@@ -223,7 +223,7 @@ H.make_win_by_ft = function(sources)
     local win_by_ft = {}
 
     for ft, source in pairs(sources) do
-        local normalized = H.normalize_source(source)
+        local normalized = H.normalize_source(source, ft)
 
         ---@diagnostic disable-next-line: missing-fields
         win_by_ft[ft] = { keys = { run = H.make_key(normalized) } }
@@ -255,17 +255,17 @@ H.resolve_source = function(source, file_path, bin_path)
     else
         local result = one(file_path, bin_path)
         vim.validate({
-            ["source[1]()"] = { result, "table" }
+            ["source[1]()"] = { result, "table" },
         })
         local result_one = result[1]
         vim.validate({
-            ["source[1]()[1]"] = { result_one, { "string", "table" } }
+            ["source[1]()[1]"] = { result_one, { "string", "table" } },
         })
         if type(result_one) == "string" then
             pipeline = { result }
         else
             vim.validate({
-                ["source[1]()[1][1]"] = { result_one[1], "string" }
+                ["source[1]()[1][1]"] = { result_one[1], "string" },
             })
             pipeline = result
         end
@@ -275,8 +275,9 @@ H.resolve_source = function(source, file_path, bin_path)
 end
 
 ---@param source scratch-runner.Source | scratch-runner.SourceCommand
+---@param ft string
 ---@return scratch-runner.Source
-H.normalize_source = function(source)
+H.normalize_source = function(source, ft)
     local normalized
 
     if type(source) == "function" then
@@ -287,7 +288,11 @@ H.normalize_source = function(source)
         elseif type(source[1]) == "table" or type(source[1]) == "function" then
             normalized = source
         else
-            error("") -- TODO:
+            vim.notify(
+                "Source for filetype '" .. ft .. "' is incorrect.\nSee `:h scratch-runner.Source` to fix this.",
+                vim.log.levels.ERROR,
+                { title = "scratch-runner.nvim" }
+            )
         end
     end
 
