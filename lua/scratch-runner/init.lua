@@ -15,6 +15,26 @@ local H = {}
 
 M.tmp_dir = vim.fs.joinpath(vim.fn.stdpath("cache") --[[@as string]], "scratch-runner")
 
+---@param message string
+---@param level vim.log.levels
+---@param opts? table
+H.notify = function(message, level, opts)
+    opts = vim.tbl_deep_extend("force", opts or {}, { title = "scratch-runner.nvim" })
+    vim.notify(message, level, opts)
+end
+
+---@param message string
+---@param opts? table
+H.notify_info = function(message, opts) H.notify(message, vim.log.levels.INFO, opts) end
+
+---@param message string
+---@param opts? table
+H.notify_warn = function(message, opts) H.notify(message, vim.log.levels.WARN, opts) end
+
+---@param message string
+---@param opts? table
+H.notify_error = function(message, opts) H.notify(message, vim.log.levels.ERROR, opts) end
+
 ---@class scratch-runner.Config
 H.config = {
     ---Key that runs the scratch buffer.
@@ -58,11 +78,7 @@ H.make_key = function(source)
                 vim.fn.mkdir(M.tmp_dir, "p")
                 local success, err, err_name = vim.uv.fs_copyfile(file_path, new_file_path)
                 if not success then
-                    vim.notify(
-                        "There was an error '" .. err_name .. "' copying the file: " .. err,
-                        vim.log.levels.ERROR,
-                        { title = "scratch-runner.nvim" }
-                    )
+                    H.notify_error("There was an error '" .. err_name .. "' copying the file: " .. err)
                     return
                 end
                 file_path = new_file_path
@@ -73,11 +89,7 @@ H.make_key = function(source)
 
             for _, command in ipairs(pipeline) do
                 if vim.fn.executable(command[1]) == 0 then
-                    vim.notify(
-                        "'" .. command[1] .. "' wasn't found on your system.",
-                        vim.log.levels.ERROR,
-                        { title = "scratch-runner.nvim" }
-                    )
+                    H.notify_error("'" .. command[1] .. "' wasn't found on your system.")
                     return
                 end
             end
@@ -288,11 +300,7 @@ H.normalize_source = function(source, ft)
         elseif type(source[1]) == "table" or type(source[1]) == "function" then
             normalized = source
         else
-            vim.notify(
-                "Source for filetype '" .. ft .. "' is incorrect.\nSee `:h scratch-runner.Source` to fix this.",
-                vim.log.levels.ERROR,
-                { title = "scratch-runner.nvim" }
-            )
+            H.notify_error("Source for filetype '" .. ft .. "' is incorrect.\nSee `:h scratch-runner.Source` to fix this.")
         end
     end
 
