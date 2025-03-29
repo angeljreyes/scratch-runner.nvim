@@ -169,10 +169,11 @@ scratch files having the wrong file extension (e.g. `python` instead of `py`)
 or having percentage signs in the file name.
 
 When you are in a scratch window, you can press `<CR>` to run the buffer.
-You can press `q` to cancel the execution of the script while it's running.
-Once the script is done running, you can see the standard output and/or the
-standard error of the process. If the process wrote to both stdout and stderr,
-you can switch between the two with `<Tab>`.
+You can also select some lines in visual mode and press `<CR>` to run only the
+selected lines. You can press `q` to cancel the execution of the script while
+it's running. Once the script is done running, you can see the standard output
+and/or the standard error of the process. If the process wrote to both stdout
+and stderr, you can switch between the two with `<Tab>`.
 
 <h2 id="default-config">Default Config</h2>
 
