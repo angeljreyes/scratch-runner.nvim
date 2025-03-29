@@ -75,7 +75,8 @@ H.make_key = function(source)
             local in_visual_mode = vim.fn.mode():find("[Vv]")
 
             if source.extension or in_visual_mode then
-                local new_file_path = vim.fs.joinpath(M.tmp_dir, "scratch." .. source.extension)
+                local extension = source.extension or vim.fn.fnamemodify(file_path, ":e")
+                local new_file_path = vim.fs.joinpath(M.tmp_dir, "scratch." .. extension)
                 vim.fn.mkdir(M.tmp_dir, "p")
                 if in_visual_mode then
                     local selection = H.get_visual_selection(window.buf)
