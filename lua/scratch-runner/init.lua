@@ -72,14 +72,26 @@ H.make_key = function(source)
             vim.cmd("silent w")
 
             local file_path = vim.api.nvim_buf_get_name(window.buf)
+            local in_visual_mode = vim.fn.mode():find("[Vv]")
 
-            if source.extension then
+            if source.extension or in_visual_mode then
                 local new_file_path = vim.fs.joinpath(M.tmp_dir, "scratch." .. source.extension)
                 vim.fn.mkdir(M.tmp_dir, "p")
-                local success, err, err_name = vim.uv.fs_copyfile(file_path, new_file_path)
-                if not success then
-                    H.notify_error("There was an error '" .. err_name .. "' copying the file: " .. err)
-                    return
+                if in_visual_mode then
+                    local selection = H.get_visual_selection(window.buf)
+                    local file = io.open(new_file_path, "w")
+                    if file == nil then
+                        H.notify_error("Could not open file " .. new_file_path)
+                        return
+                    end
+                    file:write(vim.fn.join(selection, "\n"))
+                    file:close()
+                else
+                    local success, err, err_name = vim.uv.fs_copyfile(file_path, new_file_path)
+                    if not success then
+                        H.notify_error("There was an error '" .. err_name .. "' copying the file: " .. err)
+                        return
+                    end
                 end
                 file_path = new_file_path
             end
@@ -112,6 +124,7 @@ H.make_key = function(source)
             H.run_commands(pipeline)
         end,
         desc = "Run buffer",
+        mode = { "n", "x" },
     }
 end
 
@@ -300,11 +313,47 @@ H.normalize_source = function(source, ft)
         elseif type(source[1]) == "table" or type(source[1]) == "function" then
             normalized = source
         else
-            H.notify_error("Source for filetype '" .. ft .. "' is incorrect.\nSee `:h scratch-runner.Source` to fix this.")
+            H.notify_error(
+                "Source for filetype '" .. ft .. "' is incorrect.\nSee `:h scratch-runner.Source` to fix this."
+            )
         end
     end
 
     return normalized
+end
+
+---@param bufnr integer
+---@return string[]
+H.get_visual_selection = function(bufnr)
+    -- I just copy-pasterinoed this function from
+    -- snacks.nvim/lua/snacks/debug.lua because it turns out copying
+    -- text in visual selection is more complicated than it should
+    -- and I just want this to work.
+
+    local lines ---@type string[]
+    local mode = vim.fn.mode()
+
+    if mode == "v" then
+        vim.cmd("normal! v")
+    elseif mode == "V" then
+        vim.cmd("normal! V")
+    end
+
+    local from = vim.api.nvim_buf_get_mark(bufnr, "<")
+    local to = vim.api.nvim_buf_get_mark(bufnr, ">")
+
+    -- for some reason, sometimes the column is off by one
+    -- see: https://github.com/folke/snacks.nvim/issues/190
+    local col_to = math.min(to[2] + 1, #vim.api.nvim_buf_get_lines(bufnr, to[1] - 1, to[1], false)[1])
+
+    lines = vim.api.nvim_buf_get_text(bufnr, from[1] - 1, from[2], to[1] - 1, col_to, {})
+    -- Insert empty lines to keep the line numbers
+    for _ = 1, from[1] - 1 do
+        table.insert(lines, 1, "")
+    end
+    vim.fn.feedkeys("gv", "nx")
+
+    return lines
 end
 
 return M
