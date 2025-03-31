@@ -111,17 +111,19 @@ H.make_key = function(source)
                 table.insert(pipeline, { bin_path })
             end
 
-            H.result_window = Snacks.win({
+            local win_config = {
                 style = "scratch",
-                height = Snacks.config.scratch.win.height,
-                width = Snacks.config.scratch.win.width --[[@as number]],
                 zindex = 30,
                 title = " Running... ",
                 ft = "text",
                 bo = { filetype = "text", modifiable = false, buftype = "", bufhidden = "hide", swapfile = false },
                 keys = { q = "close" },
-            })
+            }
+            local scratch_user_config = Snacks.config.scratch.win
 
+            win_config = vim.tbl_extend("keep", win_config, scratch_user_config or {})
+
+            H.result_window = Snacks.win(win_config)
             H.run_commands(pipeline)
         end,
         desc = "Run buffer",
