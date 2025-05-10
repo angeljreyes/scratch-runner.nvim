@@ -275,6 +275,7 @@ H.resolve_source = function(source, file_path, bin_path)
 
     local one = source[1]
     if type(one) == "table" then
+        one = vim.deepcopy(one)
         vim.validate({
             ["source[1][1]"] = { source[1][1], "string" },
         })
