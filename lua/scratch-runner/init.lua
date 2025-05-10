@@ -268,34 +268,24 @@ H.resolve_source = function(source, file_path, bin_path)
     ---@type string[][]
     local pipeline
 
-    vim.validate({
-        cmd = { source, "table" },
-        ["source[1]"] = { source[1], { "table", "function" } },
-    })
+    vim.validate("source", source, "table")
+    vim.validate("source[1]", source[1], { "table", "function" })
 
     local one = source[1]
     if type(one) == "table" then
         one = vim.deepcopy(one)
-        vim.validate({
-            ["source[1][1]"] = { source[1][1], "string" },
-        })
+        vim.validate("source[1][1]", source[1][1], "string")
         table.insert(one, file_path)
         pipeline = { one }
     else
         local result = one(file_path, bin_path)
-        vim.validate({
-            ["source[1]()"] = { result, "table" },
-        })
+        vim.validate("source[1]()", result, "table")
         local result_one = result[1]
-        vim.validate({
-            ["source[1]()[1]"] = { result_one, { "string", "table" } },
-        })
+        vim.validate("source[1]()[1]", result_one, { "string", "table" })
         if type(result_one) == "string" then
             pipeline = { result }
         else
-            vim.validate({
-                ["source[1]()[1][1]"] = { result_one[1], "string" },
-            })
+            vim.validate("source[1]()[1][1]", result_one[1], "string")
             pipeline = result
         end
     end
