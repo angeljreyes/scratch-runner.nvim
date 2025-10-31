@@ -15,7 +15,7 @@ Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/mai
 
   ```lua
   {
-    "DestopLine/scratch-runner.nvim",
+    "angeljreyes/scratch-runner.nvim",
     dependencies = "folke/snacks.nvim",
     opts = {
       -- Your options go here
@@ -32,7 +32,7 @@ Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/mai
 
   ```lua
   MiniDeps.add({
-    source = "DestopLine/scratch-runner.nvim",
+    source = "angeljreyes/scratch-runner.nvim",
     depends = "folke/snacks.nvim",
   })
 
@@ -50,7 +50,7 @@ Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/mai
 
   ```lua
   use({
-    "DestopLine/scratch-runner.nvim",
+    "angeljreyes/scratch-runner.nvim",
     after = "snacks.nvim",
     config = function()
       require("scratch-runner").setup({
@@ -70,7 +70,7 @@ Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/mai
   ```vim
   Plug 'folke/snacks.nvim'
   " ...
-  Plug 'DestopLine/scratch-runner.nvim'
+  Plug 'angeljreyes/scratch-runner.nvim'
 
   lua << EOF
   require("scratch-runner").setup({
