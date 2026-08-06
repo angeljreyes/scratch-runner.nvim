@@ -35,15 +35,45 @@ H.notify_warn = function(message, opts) H.notify(message, vim.log.levels.WARN, o
 ---@param opts? table
 H.notify_error = function(message, opts) H.notify(message, vim.log.levels.ERROR, opts) end
 
+---@param opts? table Extra fields to merge.
+---@return snacks.win.Config
+H.get_scratch_terminal_style = function(opts)
+    -- Load snacks.terminal to ensure that the style is not nil
+    require("snacks.terminal")
+    if H.scratch_terminal_style == nil then
+        local scratch_style =
+            vim.tbl_deep_extend("force", Snacks.config.styles.scratch, Snacks.config.scratch.win or {})
+        H.scratch_terminal_style = vim.tbl_deep_extend(
+            "force",
+            vim.tbl_extend("force", scratch_style, Snacks.config.styles.terminal),
+            { wo = scratch_style.wo },
+            {
+                wo = {
+                    number = false,
+                    relativenumber = false,
+                    signcolumn = "no",
+                },
+                keys = {
+                    q = "close",
+                    gf = false,
+                },
+                zindex = nil,
+            }
+        )
+    end
+
+    if opts then
+        return vim.tbl_deep_extend("force", H.scratch_terminal_style, opts)
+    end
+
+    return H.scratch_terminal_style
+end
+
 ---@class scratch-runner.Config
 H.config = {
     ---Key that runs the scratch buffer.
     ---@type string?
     run_key = "<CR>",
-
-    ---Key that switches between stdout and stderr.
-    ---@type string?
-    output_switch_key = "<Tab>",
 
     ---Commands that run your script. See :h scratch-runner.Source
     ---@type table<string, scratch-runner.Source | scratch-runner.SourceCommand>
@@ -52,12 +82,68 @@ H.config = {
 
 ---@param opts scratch-runner.Config?
 M.setup = function(opts)
+    if opts and opts["output_switch_key"] ~= nil then
+        H.notify_warn(
+            "This plugin no longer separates std output from std error. As a result of this, the"
+                .. " configuration option 'output_switch_key' is deprecated and no longer does"
+                .. " anything. Consider removing it from the opts table in your configuration."
+        )
+    end
+
     H.config = vim.tbl_deep_extend("force", H.config, opts or {})
 
     if not vim.tbl_isempty(H.config.sources) then
         local win_by_ft = H.make_win_by_ft(H.config.sources)
         Snacks.config.scratch.win_by_ft = vim.tbl_deep_extend("force", Snacks.config.scratch.win_by_ft or {}, win_by_ft)
     end
+end
+
+---@param window snacks.win
+---@param source scratch-runner.Source Command to run the file through.
+H.run_callback = function(window, source)
+    vim.cmd("silent w")
+
+    local file_path = vim.api.nvim_buf_get_name(window.buf)
+    local in_visual_mode = vim.fn.mode():find("[Vv]")
+
+    if source.extension or in_visual_mode then
+        local extension = source.extension or vim.fn.fnamemodify(file_path, ":e")
+        local new_file_path = vim.fs.joinpath(M.tmp_dir, "scratch." .. extension)
+        vim.fn.mkdir(M.tmp_dir, "p")
+        if in_visual_mode then
+            local selection = H.get_visual_selection(window.buf)
+            local file = io.open(new_file_path, "w")
+            if file == nil then
+                H.notify_error("Could not open file " .. new_file_path)
+                return
+            end
+            file:write(vim.fn.join(selection, "\n"))
+            file:close()
+        else
+            local success, err, err_name = vim.uv.fs_copyfile(file_path, new_file_path)
+            if not success then
+                H.notify_error("There was an error '" .. err_name .. "' copying the file: " .. err)
+                return
+            end
+        end
+        file_path = new_file_path
+    end
+
+    local bin_path = vim.fn.fnamemodify(file_path, ":r")
+    local pipeline = H.resolve_source(source, file_path, bin_path)
+
+    for _, command in ipairs(pipeline) do
+        if vim.fn.executable(command[1]) == 0 then
+            H.notify_error("'" .. command[1] .. "' wasn't found on your system.")
+            return
+        end
+    end
+
+    if source.binary then
+        table.insert(pipeline, { bin_path })
+    end
+
+    H.run_commands(pipeline, window)
 end
 
 ---Makes a keymap that runs your code.
@@ -67,180 +153,41 @@ H.make_key = function(source)
     source.binary = source.binary ~= nil and source.binary or false
     return {
         H.config.run_key,
-        ---@param window snacks.win
-        function(window)
-            vim.cmd("silent w")
-
-            local file_path = vim.api.nvim_buf_get_name(window.buf)
-            local in_visual_mode = vim.fn.mode():find("[Vv]")
-
-            if source.extension or in_visual_mode then
-                local extension = source.extension or vim.fn.fnamemodify(file_path, ":e")
-                local new_file_path = vim.fs.joinpath(M.tmp_dir, "scratch." .. extension)
-                vim.fn.mkdir(M.tmp_dir, "p")
-                if in_visual_mode then
-                    local selection = H.get_visual_selection(window.buf)
-                    local file = io.open(new_file_path, "w")
-                    if file == nil then
-                        H.notify_error("Could not open file " .. new_file_path)
-                        return
-                    end
-                    file:write(vim.fn.join(selection, "\n"))
-                    file:close()
-                else
-                    local success, err, err_name = vim.uv.fs_copyfile(file_path, new_file_path)
-                    if not success then
-                        H.notify_error("There was an error '" .. err_name .. "' copying the file: " .. err)
-                        return
-                    end
-                end
-                file_path = new_file_path
-            end
-
-            local bin_path = vim.fn.fnamemodify(file_path, ":r")
-            local pipeline = H.resolve_source(source, file_path, bin_path)
-
-            for _, command in ipairs(pipeline) do
-                if vim.fn.executable(command[1]) == 0 then
-                    H.notify_error("'" .. command[1] .. "' wasn't found on your system.")
-                    return
-                end
-            end
-
-            if source.binary then
-                table.insert(pipeline, { bin_path })
-            end
-
-            local win_config = {
-                style = "scratch",
-                zindex = 30,
-                title = " Running... ",
-                ft = "text",
-                bo = { filetype = "text", modifiable = false, buftype = "", bufhidden = "hide", swapfile = false },
-                keys = { q = "close" },
-            }
-            local scratch_user_config = Snacks.config.scratch.win
-
-            win_config = vim.tbl_extend("keep", win_config, scratch_user_config or {})
-
-            H.result_window = Snacks.win(win_config)
-            H.run_commands(pipeline)
-        end,
+        function(window) H.run_callback(window, source) end,
         desc = "Run buffer",
         mode = { "n", "x" },
     }
 end
 
 ---@param pipeline string[][] Commands to run.
-H.run_commands = function(pipeline)
-    -- I had to do some functional-style recursive immutable thingy
-    -- in order to allow the commands to run asynchronously.
+---@param window snacks.win Scratch window to open the terminal from.
+H.run_commands = function(pipeline, window)
     local next_cmd = function()
         if pipeline[2] ~= nil then
-            H.run_commands(vim.list_slice(pipeline, 2))
+            H.run_commands(vim.list_slice(pipeline, 2), window)
         end
     end
-    H.run_command(pipeline[1], pipeline[2] == nil, next_cmd)
-end
 
----@param command string[]
----@param show_output boolean
----@param next_cmd fun()
-H.run_command = function(command, show_output, next_cmd)
-    ---@param lhs string
-    ---@param desc string
-    local footer_insert_key = function(lhs, desc)
-        table.insert(H.result_window.opts.footer, { " " })
-        table.insert(H.result_window.opts.footer, { " " .. lhs .. " ", "SnacksScratchKey" })
-        table.insert(H.result_window.opts.footer, { " " .. desc .. " ", "SnacksScratchDesc" })
-    end
+    local icon, icon_hl = Snacks.util.icon(vim.bo[window.buf].filetype, "filetype")
+    local style = H.get_scratch_terminal_style({
+        zindex = window.opts.zindex + 10,
+        title = {
+            { " " },
+            { icon, icon_hl },
+            { "  Running... " },
+        },
+    })
+    local terminal = Snacks.terminal.open(pipeline[1], { win = style, interactive = false, auto_close = false })
 
-    local footer_add_close = function() footer_insert_key("q", "Go back") end
-    local running = true
-    local killed = false
-
-    local process = vim.system(
-        command,
-        show_output and { text = true } or { text = true, stdout = false },
-        vim.schedule_wrap(function(output)
-            running = false
-            if killed then
-                return false
-            end
-
-            local has_errored = output.code ~= 0
-
-            local stdout, stderr
-            if output.stdout and output.stdout ~= "" then
-                stdout = vim.split(output.stdout, "\n")
-            end
-            if output.stderr and output.stderr ~= "" and (show_output or has_errored) then
-                stderr = vim.split(output.stderr, "\n")
-            end
-
-            vim.bo[H.result_window.buf].modifiable = true
-            vim.api.nvim_buf_set_lines(H.result_window.buf, 0, -1, false, stdout or stderr or { "" })
-            vim.bo[H.result_window.buf].modifiable = false
-            if not stdout and stderr then
-                H.result_window.opts.title = {
-                    { " " },
-                    { " ", "Error" },
-                    { " Code Output " },
-                }
-                H.result_window.opts.footer = {}
-                footer_add_close()
-            elseif stdout and stderr then
-                local showing_stderr = false
-                H.result_window.opts.title = {
-                    { " " },
-                    { " ", "WarningMsg" },
-                    { " Code Output " },
-                }
-                H.result_window.opts.footer = {}
-                footer_insert_key(H.config.output_switch_key, "Show stderr")
-                footer_add_close()
-                vim.keymap.set("n", H.config.output_switch_key, function()
-                    H.result_window.opts.footer = {}
-                    vim.bo[H.result_window.buf].modifiable = true
-                    if showing_stderr then
-                        vim.api.nvim_buf_set_lines(H.result_window.buf, 0, -1, false, stdout)
-                        footer_insert_key(H.config.output_switch_key, "Show stderr")
-                    else
-                        vim.api.nvim_buf_set_lines(H.result_window.buf, 0, -1, false, stderr)
-                        footer_insert_key(H.config.output_switch_key, "Show stdout")
-                    end
-                    vim.bo[H.result_window.buf].modifiable = false
-                    footer_add_close()
-                    showing_stderr = not showing_stderr
-                    H.result_window:update()
-                end, { desc = "Show stdout/stderr", buffer = H.result_window.buf })
-            else
-                H.result_window.opts.title = {
-                    { " " },
-                    { " ", "Added" },
-                    { " Code Output " },
-                }
-                H.result_window.opts.footer = {}
-                footer_add_close()
-            end
-            H.result_window:update()
-            if output.code == 0 then
-                next_cmd()
-            end
-        end)
-    )
-
-    vim.keymap.set("n", "q", function()
-        if running then
-            process:kill(15)
-            killed = true
+    terminal:on("TermClose", function()
+        if vim.v.event.status == 0 and pipeline[2] ~= nil then
+            terminal:close()
+            next_cmd()
+        else
+            terminal.opts.title[3] = { "  Result " }
+            terminal:update()
         end
-        H.result_window:close()
-    end, { desc = "Cancel", buffer = H.result_window.buf })
-
-    H.result_window.opts.footer = {}
-    footer_insert_key("q", "Stop")
-    H.result_window:update()
+    end, { buf = true })
 end
 
 ---Make the `win_by_ft` option.

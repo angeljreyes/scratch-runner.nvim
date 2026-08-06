@@ -171,9 +171,8 @@ or having percentage signs in the file name.
 When you are in a scratch window, you can press `<CR>` to run the buffer.
 You can also select some lines in visual mode and press `<CR>` to run only the
 selected lines. You can press `q` to cancel the execution of the script while
-it's running. Once the script is done running, you can see the standard output
-and/or the standard error of the process. If the process wrote to both stdout
-and stderr, you can switch between the two with `<Tab>`.
+it's running. You can see the output of the build steps while they happen and
+even send input to them or to your script.
 
 <h2 id="default-config">Default Config</h2>
 
@@ -183,10 +182,6 @@ H.config = {
     ---Key that runs the scratch buffer.
     ---@type string?
     run_key = "<CR>",
-
-    ---Key that switches between stdout and stderr.
-    ---@type string?
-    output_switch_key = "<Tab>",
 
     ---Commands that run your script. See :h scratch-runner.Source
     ---@type table<string, scratch-runner.Source | scratch-runner.SourceCommand>

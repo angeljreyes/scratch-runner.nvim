@@ -19,7 +19,6 @@ Example: ~
 >lua
     require("scratch-runner").setup({
         run_key = "<C-t>",
-        output_switch_key = "<CR>",
     })
 <
 
@@ -29,10 +28,6 @@ Default configuration                          *scratch-runner-default-config*
         ---Key that runs the scratch buffer.
         ---@type string?
         run_key = "<CR>",
-
-        ---Key that switches between stdout and stderr.
-        ---@type string?
-        output_switch_key = "<Tab>",
 
         ---Commands that run your script. See :h scratch-runner.Source
         ---@type table<string, scratch-runner.Source | scratch-runner.SourceCommand>
