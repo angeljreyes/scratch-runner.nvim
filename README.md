@@ -84,7 +84,8 @@ Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/mai
 ## Usage
 
 In order to use the plugin, you need to add some sources to the plugin
-configuration as commands in the form of lists of strings:
+configuration. A source can be specified as a command in the form of a list of
+strings:
 
 ```lua
 {
@@ -95,8 +96,8 @@ configuration as commands in the form of lists of strings:
 }
 ```
 
-or as functions that recieve the path to the file and the path to a binary,
-and return the command:
+or as a function that takes in the path to the source file and the path to a binary,
+and returns the command:
 
 ```lua
 {
