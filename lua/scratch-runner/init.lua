@@ -1,5 +1,6 @@
 ---@module "snacks"
 
+local util = require("scratch-runner.util")
 local M = {}
 local H = {}
 
@@ -14,26 +15,6 @@ local H = {}
 ---| (fun(file_path: string, bin_path: string): string[][])
 
 M.tmp_dir = vim.fs.joinpath(vim.fn.stdpath("cache") --[[@as string]], "scratch-runner")
-
----@param message string
----@param level vim.log.levels
----@param opts? table
-H.notify = function(message, level, opts)
-    opts = vim.tbl_deep_extend("force", opts or {}, { title = "scratch-runner.nvim" })
-    vim.notify(message, level, opts)
-end
-
----@param message string
----@param opts? table
-H.notify_info = function(message, opts) H.notify(message, vim.log.levels.INFO, opts) end
-
----@param message string
----@param opts? table
-H.notify_warn = function(message, opts) H.notify(message, vim.log.levels.WARN, opts) end
-
----@param message string
----@param opts? table
-H.notify_error = function(message, opts) H.notify(message, vim.log.levels.ERROR, opts) end
 
 ---@param opts? table Extra fields to merge.
 ---@return snacks.win.Config
@@ -83,7 +64,7 @@ H.config = {
 ---@param opts scratch-runner.Config?
 M.setup = function(opts)
     if opts and opts["output_switch_key"] ~= nil then
-        H.notify_warn(
+        util.notify_warn(
             "This plugin no longer separates std output from std error. As a result of this, the"
                 .. " configuration option 'output_switch_key' is deprecated and no longer does"
                 .. " anything. Consider removing it from the opts table in your configuration."
@@ -114,7 +95,7 @@ H.run_callback = function(window, source)
             local selection = H.get_visual_selection(window.buf)
             local file = io.open(new_file_path, "w")
             if file == nil then
-                H.notify_error("Could not open file " .. new_file_path)
+                util.notify_error("Could not open file " .. new_file_path)
                 return
             end
             file:write(vim.fn.join(selection, "\n"))
@@ -122,7 +103,7 @@ H.run_callback = function(window, source)
         else
             local success, err, err_name = vim.uv.fs_copyfile(file_path, new_file_path)
             if not success then
-                H.notify_error("There was an error '" .. err_name .. "' copying the file: " .. err)
+                util.notify_error("There was an error '" .. err_name .. "' copying the file: " .. err)
                 return
             end
         end
@@ -134,7 +115,7 @@ H.run_callback = function(window, source)
 
     for _, command in ipairs(pipeline) do
         if vim.fn.executable(command[1]) == 0 then
-            H.notify_error("'" .. command[1] .. "' wasn't found on your system.")
+            util.notify_error("'" .. command[1] .. "' wasn't found on your system.")
             return
         end
     end
@@ -254,7 +235,7 @@ H.normalize_source = function(source, ft)
         elseif type(source[1]) == "table" or type(source[1]) == "function" then
             normalized = source
         else
-            H.notify_error(
+            util.notify_error(
                 "Source for filetype '" .. ft .. "' is incorrect.\nSee `:h scratch-runner.Source` to fix this."
             )
         end
