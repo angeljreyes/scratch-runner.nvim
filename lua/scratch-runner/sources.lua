@@ -109,4 +109,10 @@ return {
     },
     julia = { { "julia" } },
     ocaml = { { "ocaml" } },
+    pascal = {
+        function(file_path, bin_path)
+            return { "fpc", file_path, "-o" .. bin_path }
+        end,
+        binary = true,
+    },
 }
