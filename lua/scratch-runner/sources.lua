@@ -94,4 +94,5 @@ return {
         extension = "bat",
     },
     fsharp = { { "dotnet", "fsi" }, extension = "fsx" },
+    go = { { "go", "run" } },
 }
