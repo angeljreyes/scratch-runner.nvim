@@ -95,4 +95,5 @@ return {
     },
     fsharp = { { "dotnet", "fsi" }, extension = "fsx" },
     go = { { "go", "run" } },
+    groovy = { { "groovy" } },
 }
