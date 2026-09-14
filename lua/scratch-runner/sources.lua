@@ -70,4 +70,22 @@ return {
         binary = true,
     },
     crystal = { { "crystal" } },
+    cs = {
+        function(file_path)
+            if vim.fn.executable("dotnet") then
+                local dotnet_version = vim.system({ "dotnet", "--version" }):wait(5000).stdout
+                -- If dotnet version is >= 10 (if major has 2 digits or more)
+                if dotnet_version and dotnet_version:match("^%d%d") then
+                    return { "dotnet", "run", file_path }
+                end
+            end
+
+            if vim.fn.executable("dotnet-script") then
+                return { "dotnet-script", file_path }
+            end
+
+            util.notify_error("In order to run a C# script you need either dotnet >= 10, or the dotnet-script tool.")
+            return {}
+        end,
+    },
 }
