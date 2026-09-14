@@ -164,4 +164,5 @@ return {
         )
     },
     sh = { { "sh" } },
+    swift = { { "swift" } },
 }
