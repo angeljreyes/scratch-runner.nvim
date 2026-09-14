@@ -1,0 +1,43 @@
+local util = require("scratch-runner.util")
+local H = {}
+
+---Returns the first command that is found in the OS or `nil` if none
+---was found.
+---@generic T : string
+---@param commands [T, ...] List of commands to search
+---@return T?
+H.get_first_available = function(commands)
+    for _, command in ipairs(commands) do
+        if vim.fn.executable(command) == 1 then
+            return command
+        end
+    end
+
+    return nil
+end
+
+---Returns a `SourceCommand` that attempts to use the first command in
+---`commands` that is found in the OS, and notifies the user with an
+---error if no command was found.
+---@generic T : string
+---@param commands [T, ...]
+---@param callback fun(command: T, file_path: string, bin_path: string): string[] | string[][]
+---@return scratch-runner.SourceCommand
+H.make_command_with = function(commands, callback)
+    ---@param file_path string
+    ---@param bin_path string
+    ---@return string[]
+    return function(file_path, bin_path)
+        local command = H.get_first_available(commands)
+        if command == nil then
+            local list = table.concat(commands, ", ")
+            util.notify_error("In order to run a script of this filetype you need one of these programs: " .. list)
+            return {}
+        end
+        return callback(command, file_path, bin_path)
+    end
+end
+
+---@type table<string, scratch-runner.Source>
+return {
+}

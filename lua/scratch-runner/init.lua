@@ -63,7 +63,9 @@ H.config = {
 
 ---@param opts scratch-runner.Config?
 M.setup = function(opts)
-    if opts and opts["output_switch_key"] ~= nil then
+    opts = opts or {}
+
+    if opts["output_switch_key"] ~= nil then
         util.notify_warn(
             "This plugin no longer separates std output from std error. As a result of this, the"
                 .. " configuration option 'output_switch_key' is deprecated and no longer does"
@@ -71,7 +73,9 @@ M.setup = function(opts)
         )
     end
 
-    H.config = vim.tbl_deep_extend("force", H.config, opts or {})
+    H.config = vim.tbl_deep_extend("force", H.config, opts)
+    local sources = require("scratch-runner.sources")
+    H.config.sources = vim.tbl_extend("keep", H.config.sources, sources)
 
     if not vim.tbl_isempty(H.config.sources) then
         local win_by_ft = H.make_win_by_ft(H.config.sources)
