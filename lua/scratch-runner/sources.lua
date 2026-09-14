@@ -115,4 +115,5 @@ return {
         end,
         binary = true,
     },
+    perl = { { "perl" }, extension = "pl" },
 }
