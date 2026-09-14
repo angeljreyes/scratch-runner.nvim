@@ -136,4 +136,9 @@ return {
         { "ruby" },
         extension = "rb",
     },
+    rust = {
+        function(filepath, bin_path) return { "rustc", filepath, "-o", bin_path } end,
+        extension = "rs",
+        binary = true,
+    },
 }
