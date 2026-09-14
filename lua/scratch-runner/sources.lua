@@ -132,4 +132,8 @@ return {
     },
     r = { { "Rscript" } },
     racket = { { "racket" } },
+    ruby = {
+        { "ruby" },
+        extension = "rb",
+    },
 }
