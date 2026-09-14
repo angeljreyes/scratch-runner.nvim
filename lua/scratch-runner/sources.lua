@@ -222,4 +222,8 @@ return {
         { "cscript", "//Nologo" },
         extension = "vbs",
     },
+    winbatch = {
+        { "cmd", "/c" },
+        extension = "bat",
+    },
 }
