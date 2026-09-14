@@ -102,4 +102,5 @@ return {
             return {}
         end
     },
+    java = { { "java" } },
 }
