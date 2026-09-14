@@ -89,4 +89,8 @@ return {
         end,
     },
     dart = { { "dart" } },
+    dosbatch = {
+        { "cmd", "/c" },
+        extension = "bat",
+    },
 }
