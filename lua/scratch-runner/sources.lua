@@ -69,4 +69,5 @@ return {
         ),
         binary = true,
     },
+    crystal = { { "crystal" } },
 }
