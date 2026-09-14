@@ -149,4 +149,18 @@ return {
             end
         ),
     },
+    scheme = {
+        H.make_command_with(
+            { "scheme",  "csi", "chicken-csi", "guile" },
+            function(command, file_path)
+                if command == "scheme" then
+                    return { command, "--script", file_path }
+                elseif command == "csi" or command == "chicken-csi" then
+                    return { command, "-script", file_path }
+                else
+                    return { command, "--auto-compile", "--fresh-auto-compile", "--no-debug", "-s", file_path }
+                end
+            end
+        )
+    },
 }
