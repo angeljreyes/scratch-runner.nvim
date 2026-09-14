@@ -107,4 +107,5 @@ return {
         H.make_command_with({ "deno", "bun", "node" }, function(command, file_path) return { command, file_path } end),
         extension = "js",
     },
+    julia = { { "julia" } },
 }
