@@ -38,6 +38,35 @@ H.make_command_with = function(commands, callback)
     end
 end
 
+---Checks if a given `node --version` string is >= v22.6.0
+---@param version string The output from `node --version` (e.g., "v22.6.0")
+---@return boolean # `true` if >= 22.6.0, false otherwise
+H.is_node_22_6_or_newer = function(version)
+    if type(version) ~= "string" then
+        return false
+    end
+
+    -- Clean the string: strip leading 'v', trim whitespace, remove pre-release tags (e.g., "-rc.1")
+    local cleaned = version:gsub("%s+", ""):gsub("^v", ""):gsub("%-.*$", "")
+
+    local parts = vim.split(cleaned, "%.")
+    local major = tonumber(parts[1]) or 0
+    local minor = tonumber(parts[2]) or 0
+    local patch = tonumber(parts[3]) or 0
+
+    if major > 22 then
+        return true
+    elseif major == 22 then
+        if minor > 6 then
+            return true
+        elseif minor == 6 then
+            return patch >= 0
+        end
+    end
+
+    return false
+end
+
 ---@type table<string, scratch-runner.Source>
 return {
     bash = { { "bash" } },
@@ -165,4 +194,28 @@ return {
     },
     sh = { { "sh" } },
     swift = { { "swift" } },
+    typescript = {
+        H.make_command_with({ "deno", "bun", "node" }, function(command, file_path)
+            if command ~= "node" then
+                return { command, file_path }
+            end
+
+            local node_version = vim.system({ "node", "--version" }):wait(5000).stdout
+            if node_version and H.is_node_22_6_or_newer(node_version) then
+                return { command, file_path }
+            elseif vim.fn.executable("npm") then
+                local has_tsx = vim.system({ "npm", "list", "-g", "tsx" }):wait(5000).code == 0
+                if has_tsx then
+                    return { "npm", "exec", "tsx", file_path }
+                end
+            end
+
+            util.notify_error(
+                "In order to execute a TypeScript file you need either deno, bun,"
+                    .. " node >= 22.6 or node with the tsx package installed globally."
+            )
+            return {}
+        end),
+        extension = "ts",
+    },
 }
