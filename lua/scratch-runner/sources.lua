@@ -96,4 +96,10 @@ return {
     fsharp = { { "dotnet", "fsi" }, extension = "fsx" },
     go = { { "go", "run" } },
     groovy = { { "groovy" } },
+    html = {
+        function(file_path)
+            vim.ui.open(file_path)
+            return {}
+        end
+    },
 }
