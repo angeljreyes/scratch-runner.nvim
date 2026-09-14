@@ -141,4 +141,12 @@ return {
         extension = "rs",
         binary = true,
     },
+    scala = {
+        H.make_command_with(
+            { "scala-cli", "scala" },
+            function(command, file_path)
+                return command == "scala-cli" and { command, "run", file_path } or { command, file_path }
+            end
+        ),
+    },
 }
