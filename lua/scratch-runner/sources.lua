@@ -93,4 +93,5 @@ return {
         { "cmd", "/c" },
         extension = "bat",
     },
+    fsharp = { { "dotnet", "fsi" }, extension = "fsx" },
 }
