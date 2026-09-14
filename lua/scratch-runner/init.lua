@@ -113,6 +113,10 @@ H.run_callback = function(window, source)
     local bin_path = vim.fn.fnamemodify(file_path, ":r")
     local pipeline = H.resolve_source(source, file_path, bin_path)
 
+    if vim.tbl_isempty(pipeline) then
+        return
+    end
+
     for _, command in ipairs(pipeline) do
         if vim.fn.executable(command[1]) == 0 then
             util.notify_error("'" .. command[1] .. "' wasn't found on your system.")
@@ -209,9 +213,11 @@ H.resolve_source = function(source, file_path, bin_path)
         local result = one(file_path, bin_path)
         vim.validate("source[1]()", result, "table")
         local result_one = result[1]
-        vim.validate("source[1]()[1]", result_one, { "string", "table" })
+        vim.validate("source[1]()[1]", result_one, { "string", "table", "nil" })
         if type(result_one) == "string" then
             pipeline = { result }
+        elseif type(result_one) == "nil" then
+            pipeline = {}
         else
             vim.validate("source[1]()[1][1]", result_one[1], "string")
             pipeline = result
