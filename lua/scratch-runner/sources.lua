@@ -41,4 +41,11 @@ end
 ---@type table<string, scratch-runner.Source>
 return {
     bash = { { "bash" } },
+    c = {
+        H.make_command_with(
+            { "gcc", "clang" },
+            function(command, file_path, bin_path) return { command, file_path, "-o", bin_path } end
+        ),
+        binary = true,
+    },
 }
