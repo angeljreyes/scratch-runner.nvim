@@ -1,0 +1,1 @@
+require("scratch-runner").setup({})
