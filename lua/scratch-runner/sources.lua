@@ -108,4 +108,5 @@ return {
         extension = "js",
     },
     julia = { { "julia" } },
+    ocaml = { { "ocaml" } },
 }
