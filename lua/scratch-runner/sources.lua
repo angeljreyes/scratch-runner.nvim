@@ -123,4 +123,11 @@ return {
             function(command, file_path) return { command, "-ExecutionPolicy", "ByPass", "-File", file_path } end
         ),
     },
+    python = {
+        H.make_command_with(
+            { "python3", "python", "py", "pypy3" },
+            function(command, file_path) return { command, file_path } end
+        ),
+        extension = "py",
+    },
 }
