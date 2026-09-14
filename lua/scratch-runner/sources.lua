@@ -226,4 +226,5 @@ return {
         { "cmd", "/c" },
         extension = "bat",
     },
+    zig = { { "zig", "run" } },
 }
