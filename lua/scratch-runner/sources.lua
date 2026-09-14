@@ -117,4 +117,10 @@ return {
     },
     perl = { { "perl" }, extension = "pl" },
     php = { { "php" } },
+    ps1 = {
+        H.make_command_with(
+            { "powershell", "pwsh" },
+            function(command, file_path) return { command, "-ExecutionPolicy", "ByPass", "-File", file_path } end
+        ),
+    },
 }
