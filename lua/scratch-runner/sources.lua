@@ -62,4 +62,11 @@ return {
             end
         )
     },
+    cpp = {
+        H.make_command_with(
+            { "g++", "clang++" },
+            function(command, file_path, bin_path) return { command, file_path, "-o", bin_path } end
+        ),
+        binary = true,
+    },
 }
