@@ -131,4 +131,5 @@ return {
         extension = "py",
     },
     r = { { "Rscript" } },
+    racket = { { "racket" } },
 }
