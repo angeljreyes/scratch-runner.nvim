@@ -40,4 +40,5 @@ end
 
 ---@type table<string, scratch-runner.Source>
 return {
+    bash = { { "bash" } },
 }
