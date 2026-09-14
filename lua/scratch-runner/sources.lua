@@ -88,4 +88,5 @@ return {
             return {}
         end,
     },
+    dart = { { "dart" } },
 }
