@@ -218,4 +218,8 @@ return {
         end),
         extension = "ts",
     },
+    vb = {
+        { "cscript", "//Nologo" },
+        extension = "vbs",
+    },
 }
