@@ -227,4 +227,5 @@ return {
         extension = "bat",
     },
     zig = { { "zig", "run" } },
+    zsh = { { "zsh" } },
 }
