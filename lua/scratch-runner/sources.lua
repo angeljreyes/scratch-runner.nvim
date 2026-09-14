@@ -48,4 +48,18 @@ return {
         ),
         binary = true,
     },
+    clojure = {
+        H.make_command_with(
+            { "bb", "clojure", "lein" },
+            function(command, file_path)
+                if command == "bb" then
+                    return { command, file_path }
+                elseif command == "clojure" then
+                    return { command, "-M", file_path }
+                else
+                    return { command, "exec", file_path }
+                end
+            end
+        )
+    },
 }
