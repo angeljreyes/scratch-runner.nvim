@@ -116,4 +116,5 @@ return {
         binary = true,
     },
     perl = { { "perl" }, extension = "pl" },
+    php = { { "php" } },
 }
