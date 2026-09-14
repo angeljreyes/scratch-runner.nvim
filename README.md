@@ -4,7 +4,8 @@ Plugin for quickly adding running capabilities to `snacks.scratch`.
 https://github.com/user-attachments/assets/a1c6843a-e212-4c27-b76c-d23bdfba4ebc
 
 ## Requirements
-Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/main#%EF%B8%8F-requirements).
+Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/main#%EF%B8%8F-requirements) plus the following:
+- Neovim >= 0.10
 
 ## Installation
 
