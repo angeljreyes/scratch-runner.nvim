@@ -130,4 +130,5 @@ return {
         ),
         extension = "py",
     },
+    r = { { "Rscript" } },
 }
