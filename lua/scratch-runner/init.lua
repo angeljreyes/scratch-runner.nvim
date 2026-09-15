@@ -8,6 +8,7 @@ local H = {}
 ---@field [1] scratch-runner.SourceCommand
 ---@field extension? string
 ---@field binary? boolean
+---@field file_name? string
 
 ---@alias scratch-runner.SourceCommand
 ---| string[]
@@ -91,9 +92,10 @@ H.run_callback = function(window, source)
     local file_path = vim.api.nvim_buf_get_name(window.buf)
     local in_visual_mode = vim.fn.mode():find("[Vv]")
 
-    if source.extension or in_visual_mode then
+    if source.extension or source.file_name or in_visual_mode then
         local extension = source.extension or vim.fn.fnamemodify(file_path, ":e")
-        local new_file_path = vim.fs.joinpath(M.tmp_dir, "scratch." .. extension)
+        local file_name = source.file_name or "scratch"
+        local new_file_path = vim.fs.joinpath(M.tmp_dir, file_name .. "." .. extension)
         vim.fn.mkdir(M.tmp_dir, "p")
         if in_visual_mode then
             local selection = H.get_visual_selection(window.buf)
