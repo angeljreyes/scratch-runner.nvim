@@ -117,6 +117,16 @@ return {
             return {}
         end,
     },
+    d = {
+        H.make_command_with(
+            { "dmd", "gdc", "ldc" },
+            function(command, file_path, bin_path)
+                return { command, file_path, "-o", bin_path }
+            end
+        ),
+        binary = true,
+        file_name = "scratch",
+    },
     dart = { { "dart" } },
     dosbatch = {
         { "cmd", "/c" },
