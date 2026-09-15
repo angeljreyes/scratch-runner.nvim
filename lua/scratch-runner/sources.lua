@@ -152,6 +152,17 @@ return {
         { "nim", "r", "--verbosity:0" },
         file_name = "scratch",
     },
+    lisp = {
+        H.make_command_with({ "sbcl", "ecl", "clisp" }, function(command, file_path)
+            if command == "sbcl" then
+                return { command, "--script", file_path }
+            elseif command == "ecl" then
+                return { command, "--shell", file_path }
+            else
+                return { command, file_path }
+            end
+        end),
+    },
     ocaml = { { "ocaml" } },
     pascal = {
         function(file_path, bin_path)
