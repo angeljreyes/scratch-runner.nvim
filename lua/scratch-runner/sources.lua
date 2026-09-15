@@ -148,6 +148,10 @@ return {
         extension = "js",
     },
     julia = { { "julia" } },
+    nim = {
+        { "nim", "r", "--verbosity:0" },
+        file_name = "scratch",
+    },
     ocaml = { { "ocaml" } },
     pascal = {
         function(file_path, bin_path)
