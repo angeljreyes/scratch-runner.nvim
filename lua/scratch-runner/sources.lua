@@ -229,6 +229,11 @@ return {
         )
     },
     sh = { { "sh" } },
+    sml = {
+        function(file_path, bin_path) return { "mlton", "-output", bin_path, file_path } end,
+        extension = "sml",
+        binary = true,
+    },
     swift = { { "swift" } },
     typescript = {
         H.make_command_with({ "deno", "bun", "node" }, function(command, file_path)
