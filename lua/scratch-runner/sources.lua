@@ -132,6 +132,16 @@ return {
         { "cmd", "/c" },
         extension = "bat",
     },
+    fortran = {
+        H.make_command_with(
+            { "gfortran", "flang", "flang-new", "ifx" },
+            function(command, file_path, bin_path)
+                return { command, file_path, "-o", bin_path }
+            end
+        ),
+        extension = "F90",
+        binary = true,
+    },
     fsharp = { { "dotnet", "fsi" }, extension = "fsx" },
     go = { { "go", "run" } },
     groovy = { { "groovy" } },
