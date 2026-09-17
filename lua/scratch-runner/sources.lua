@@ -132,6 +132,7 @@ return {
         { "cmd", "/c" },
         extension = "bat",
     },
+    erlang = { { "escript" } },
     fortran = {
         H.make_command_with(
             { "gfortran", "flang", "flang-new", "ifx" },
