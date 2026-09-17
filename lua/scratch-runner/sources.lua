@@ -173,6 +173,7 @@ return {
             end
         end),
     },
+    mojo = { { "mojo", "run" } },
     ocaml = { { "ocaml" } },
     pascal = {
         function(file_path, bin_path)
