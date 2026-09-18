@@ -176,6 +176,7 @@ return {
     },
     mojo = { { "mojo", "run" } },
     ocaml = { { "ocaml" } },
+    odin = { { "odin", "run", "-file" } },
     pascal = {
         function(file_path, bin_path)
             return { "fpc", file_path, "-o" .. bin_path }
