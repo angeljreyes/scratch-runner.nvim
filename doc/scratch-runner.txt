@@ -7,6 +7,7 @@ Contents                                             *scratch-runner-contents*
 
     1. Configuration                                   |scratch-runner-config|
     2. Types                                            |scratch-runner-types|
+    3. Default Sources                        |scratch-runner-default-sources|       
 
 ==============================================================================
 1. Configuration                                       *scratch-runner-config*
@@ -29,7 +30,9 @@ Default configuration                          *scratch-runner-default-config*
         ---@type string?
         run_key = "<CR>",
 
-        ---Commands that run your script. See :h scratch-runner.Source
+        ---Commands that run your script. See :h scratch-runner.Source.
+        ---To see what sources are available by default,
+        ---see :h scratch-runner-default-sources
         ---@type table<string, scratch-runner.Source | scratch-runner.SourceCommand>
         sources = {},
     }
@@ -96,6 +99,61 @@ SourceCommand                                   *scratch-runner.SourceCommand*
                 }
             end
 <
-    
+
+
+==============================================================================
+3. Default Sources                            *scratch-runner-default-sources*
+
+Default Sources
+    `scratch-runner.nvim` comes pre-configured with the following sources,
+    with dependencies specified in parenthesis (only one is needed).
+        • Bash (`bash`)
+        • C (`gcc`, `clang`)
+        • C3 (`c3c`)
+        • Clojure (`bb`, `clojure`, `lein`)
+        • C++ (`g++`, `clang++`)
+        • Crystal (`crystal`)
+        • C# (`dotnet` >= 10, `dotnet-script`)
+        • D (`dmd`, `gdc`, `ldc`)
+        • Dart (`dart`)
+        • Batch (`cmd`, Windows Only)
+        • Erlang (`escript`)
+        • Fish (`fish`)
+        • Fortran (`gfortran`, `flang`, `flang-new`, `ifx`)
+        • F# (`dotnet`)
+        • Go (`go`)
+        • Groovy (`groovy`)
+        • Haskell (`runghc`)
+        • Html (Any browser)
+        • Java (`java`)
+        • JavaScript (`deno`, `bun`, `node`)
+        • Julia (`julia`)
+        • Kotlin (`kotlin`)
+        • Lisp (`sbcl`, `ecl`, `clisp`)
+        • Mojo (`mojo`)
+        • Nim (`nim`)
+        • Nushell (`nu`)
+        • OCaml (`ocaml`)
+        • Odin (`odin`)
+        • Pascal (`fpc`)
+        • Perl (`perl`)
+        • Php (`php`)
+        • Powershell (`powershell`, `pwsh`)
+        • Python (`python3`, `python`, `py`, `pypy3`)
+        • R (`Rscript`)
+        • Racket (`racket`)
+        • Ruby (`ruby`)
+        • Rust (`rustc`)
+        • Scala (`scala-cli`, `scala`)
+        • Scheme (`scheme`, `csi`, `chicken-csi`, `guile`)
+        • sh (`sh`)
+        • SML (`mlton`)
+        • Swift (`swift`)
+        • TypeScript (`deno`, `bun`, `node` >= 22.6.0, `npm exec tsx`)
+        • V (`v`)
+        • Visual Basic (`cscript`, Windows Only)
+        • Zig (`zig`)
+        • Zsh (`zsh`)
+
 
 vim:tw=78:ts=8:et:ft=help:norl:
