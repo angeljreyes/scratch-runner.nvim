@@ -129,6 +129,7 @@ return {
         extension = "bat",
     },
     erlang = { { "escript" } },
+    fish = { { "fish" } },
     fortran = {
         H.make_command_with(
             { "gfortran", "flang", "flang-new", "ifx" },
