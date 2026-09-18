@@ -77,6 +77,7 @@ return {
         ),
         binary = true,
     },
+    c3 = { { "c3c", "compile-run", "--quiet" } },
     clojure = {
         H.make_command_with(
             { "bb", "clojure", "lein" },
