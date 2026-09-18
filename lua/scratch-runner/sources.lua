@@ -160,6 +160,10 @@ return {
         extension = "js",
     },
     julia = { { "julia" } },
+    kotlin = {
+        { "kotlin" },
+        extension = "kts",
+    },
     nim = {
         { "nim", "r", "--verbosity:0" },
         file_name = "scratch",
