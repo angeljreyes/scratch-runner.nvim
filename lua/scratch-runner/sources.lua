@@ -79,18 +79,15 @@ return {
     },
     c3 = { { "c3c", "compile-run", "--quiet" } },
     clojure = {
-        H.make_command_with(
-            { "bb", "clojure", "lein" },
-            function(command, file_path)
-                if command == "bb" then
-                    return { command, file_path }
-                elseif command == "clojure" then
-                    return { command, "-M", file_path }
-                else
-                    return { command, "exec", file_path }
-                end
+        H.make_command_with({ "bb", "clojure", "lein" }, function(command, file_path)
+            if command == "bb" then
+                return { command, file_path }
+            elseif command == "clojure" then
+                return { command, "-M", file_path }
+            else
+                return { command, "exec", file_path }
             end
-        )
+        end),
     },
     cpp = {
         H.make_command_with(
@@ -121,9 +118,7 @@ return {
     d = {
         H.make_command_with(
             { "dmd", "gdc", "ldc" },
-            function(command, file_path, bin_path)
-                return { command, file_path, "-o", bin_path }
-            end
+            function(command, file_path, bin_path) return { command, file_path, "-o", bin_path } end
         ),
         binary = true,
         file_name = "scratch",
@@ -137,9 +132,7 @@ return {
     fortran = {
         H.make_command_with(
             { "gfortran", "flang", "flang-new", "ifx" },
-            function(command, file_path, bin_path)
-                return { command, file_path, "-o", bin_path }
-            end
+            function(command, file_path, bin_path) return { command, file_path, "-o", bin_path } end
         ),
         extension = "F90",
         binary = true,
@@ -152,7 +145,7 @@ return {
         function(file_path)
             vim.ui.open(file_path)
             return {}
-        end
+        end,
     },
     java = { { "java" } },
     javascript = {
@@ -163,10 +156,6 @@ return {
     kotlin = {
         { "kotlin" },
         extension = "kts",
-    },
-    nim = {
-        { "nim", "r", "--verbosity:0" },
-        file_name = "scratch",
     },
     lisp = {
         H.make_command_with({ "sbcl", "ecl", "clisp" }, function(command, file_path)
@@ -180,12 +169,14 @@ return {
         end),
     },
     mojo = { { "mojo", "run" } },
+    nim = {
+        { "nim", "r", "--verbosity:0" },
+        file_name = "scratch",
+    },
     ocaml = { { "ocaml" } },
     odin = { { "odin", "run", "-file" } },
     pascal = {
-        function(file_path, bin_path)
-            return { "fpc", file_path, "-o" .. bin_path }
-        end,
+        function(file_path, bin_path) return { "fpc", file_path, "-o" .. bin_path } end,
         binary = true,
     },
     perl = { { "perl" }, extension = "pl" },
@@ -223,18 +214,15 @@ return {
         ),
     },
     scheme = {
-        H.make_command_with(
-            { "scheme",  "csi", "chicken-csi", "guile" },
-            function(command, file_path)
-                if command == "scheme" then
-                    return { command, "--script", file_path }
-                elseif command == "csi" or command == "chicken-csi" then
-                    return { command, "-script", file_path }
-                else
-                    return { command, "--auto-compile", "--fresh-auto-compile", "--no-debug", "-s", file_path }
-                end
+        H.make_command_with({ "scheme", "csi", "chicken-csi", "guile" }, function(command, file_path)
+            if command == "scheme" then
+                return { command, "--script", file_path }
+            elseif command == "csi" or command == "chicken-csi" then
+                return { command, "-script", file_path }
+            else
+                return { command, "--auto-compile", "--fresh-auto-compile", "--no-debug", "-s", file_path }
             end
-        )
+        end),
     },
     sh = { { "sh" } },
     sml = {
