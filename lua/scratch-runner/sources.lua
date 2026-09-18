@@ -173,6 +173,7 @@ return {
         { "nim", "r", "--verbosity:0" },
         file_name = "scratch",
     },
+    nu = { { "nu" } },
     ocaml = { { "ocaml" } },
     odin = { { "odin", "run", "-file" } },
     pascal = {
