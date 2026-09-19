@@ -24,6 +24,23 @@ Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/mai
 </details>
 
 <details>
+  <summary>With
+    <a href="https://neovim.io/doc/user/pack/#vim.pack">vim.pack</a>
+  </summary>
+
+  ```lua
+  -- These should be on separate vim.pack.add() calls
+  vim.pack.add({
+    "https://github.com/folke/snacks.nvim"
+  })
+  vim.pack.add({
+    "https://github.com/angeljreyes/scratch-runner.nvim"
+  })
+  ```
+
+</details>
+
+<details>
   <summary>With 
     <a href="https://github.com/echasnovski/mini.deps">mini.deps</a>
   </summary>
