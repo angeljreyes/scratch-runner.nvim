@@ -29,11 +29,68 @@ Default configuration                          *scratch-runner-default-config*
         ---@type string?
         run_key = "<CR>",
 
-        ---Commands that run your script. See :h scratch-runner.Source
+        ---Commands that run your script. See :h scratch-runner.Source.
+        ---To see what sources are available by default,
+        ---see :h scratch-runner-default-sources
         ---@type table<string, scratch-runner.Source | scratch-runner.SourceCommand>
         sources = {},
     }
 <
+
+Default sources                               *scratch-runner-default-sources*
+    `scratch-runner.nvim` comes pre-configured with the following sources and
+    each one requires at least one of the dependencies specified in
+    parenthesis to be available in `PATH`. If you have multiple dependencies
+    installed, the first one found from left to right will be used. For
+    example, if both `deno` and `node` are installed in your system, `deno`
+    will be used, since it comes before `node` in the list.
+        • Bash (`bash`)
+        • Batch (`cmd`, Windows Only)
+        • C (`gcc`, `clang`)
+        • C3 (`c3c`)
+        • Clojure (`bb`, `clojure`, `lein`)
+        • C++ (`g++`, `clang++`)
+        • Crystal (`crystal`)
+        • C# (`dotnet` >= 10, `dotnet-script`)
+        • D (`dmd`, `gdc`, `ldc`)
+        • Dart (`dart`)
+        • Erlang (`escript`)
+        • Fish (`fish`)
+        • Fortran (`gfortran`, `flang`, `flang-new`, `ifx`)
+        • F# (`dotnet`)
+        • Go (`go`)
+        • Groovy (`groovy`)
+        • Haskell (`runghc`)
+        • Html (Any browser)
+        • Java (`java`)
+        • JavaScript (`deno`, `bun`, `node`)
+        • Julia (`julia`)
+        • Kotlin (`kotlin`)
+        • Lisp (`sbcl`, `ecl`, `clisp`)
+        • Mojo (`mojo`)
+        • Nim (`nim`)
+        • Nushell (`nu`)
+        • OCaml (`ocaml`)
+        • Odin (`odin`)
+        • Pascal (`fpc`)
+        • Perl (`perl`)
+        • Php (`php`)
+        • Powershell (`powershell`, `pwsh`)
+        • Python (`python3`, `python`, `py`, `pypy3`)
+        • R (`Rscript`)
+        • Racket (`racket`)
+        • Ruby (`ruby`)
+        • Rust (`rustc`)
+        • Scala (`scala-cli`, `scala`)
+        • Scheme (`scheme`, `csi`, `chicken-csi`, `guile`)
+        • sh (`sh`)
+        • SML (`mlton`)
+        • Swift (`swift`)
+        • TypeScript (`deno`, `bun`, `node` >= 22.6.0, `npm exec tsx`)
+        • V (`v`)
+        • Visual Basic (`cscript`, Windows Only)
+        • Zig (`zig`)
+        • Zsh (`zsh`)
 
 
 ==============================================================================
@@ -58,6 +115,12 @@ Source                                                 *scratch-runner.Source*
         true, the executable file produced by {1} will be executed. This is
         the same as appending `{ bin_path }` to the end of the return table
         of {1}. Defaults to `false`.
+
+      • {file_name}? (`string`) The file name (without extension) that the
+        scratch file will have. Just like with {extension}, this makes the
+        scratch file be copied to a temporary directory. This is useful for
+        languages that require the filename to start with an uppercase letter
+        for example.
 
 SourceCommand                                   *scratch-runner.SourceCommand*
     Represents the command that will run your scratch file.
@@ -96,6 +159,6 @@ SourceCommand                                   *scratch-runner.SourceCommand*
                 }
             end
 <
-    
+
 
 vim:tw=78:ts=8:et:ft=help:norl:

@@ -8,6 +8,7 @@ local H = {}
 ---@field [1] scratch-runner.SourceCommand
 ---@field extension? string
 ---@field binary? boolean
+---@field file_name? string
 
 ---@alias scratch-runner.SourceCommand
 ---| string[]
@@ -63,7 +64,9 @@ H.config = {
 
 ---@param opts scratch-runner.Config?
 M.setup = function(opts)
-    if opts and opts["output_switch_key"] ~= nil then
+    opts = opts or {}
+
+    if opts["output_switch_key"] ~= nil then
         util.notify_warn(
             "This plugin no longer separates std output from std error. As a result of this, the"
                 .. " configuration option 'output_switch_key' is deprecated and no longer does"
@@ -71,7 +74,9 @@ M.setup = function(opts)
         )
     end
 
-    H.config = vim.tbl_deep_extend("force", H.config, opts or {})
+    H.config = vim.tbl_deep_extend("force", H.config, opts)
+    local sources = require("scratch-runner.sources")
+    H.config.sources = vim.tbl_extend("keep", H.config.sources, sources)
 
     if not vim.tbl_isempty(H.config.sources) then
         local win_by_ft = H.make_win_by_ft(H.config.sources)
@@ -87,9 +92,10 @@ H.run_callback = function(window, source)
     local file_path = vim.api.nvim_buf_get_name(window.buf)
     local in_visual_mode = vim.fn.mode():find("[Vv]")
 
-    if source.extension or in_visual_mode then
+    if source.extension or source.file_name or in_visual_mode then
         local extension = source.extension or vim.fn.fnamemodify(file_path, ":e")
-        local new_file_path = vim.fs.joinpath(M.tmp_dir, "scratch." .. extension)
+        local file_name = source.file_name or "scratch"
+        local new_file_path = vim.fs.joinpath(M.tmp_dir, file_name .. "." .. extension)
         vim.fn.mkdir(M.tmp_dir, "p")
         if in_visual_mode then
             local selection = H.get_visual_selection(window.buf)
