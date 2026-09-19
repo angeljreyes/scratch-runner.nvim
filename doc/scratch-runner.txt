@@ -62,6 +62,12 @@ Source                                                 *scratch-runner.Source*
         the same as appending `{ bin_path }` to the end of the return table
         of {1}. Defaults to `false`.
 
+      • {file_name}? (`string`) The file name (without extension) that the
+        scratch file will have. Just like with {extension}, this makes the
+        scratch file be copied to a temporary directory. This is useful for
+        languages that require the filename to start with an uppercase letter
+        for example.
+
 SourceCommand                                   *scratch-runner.SourceCommand*
     Represents the command that will run your scratch file.
 
