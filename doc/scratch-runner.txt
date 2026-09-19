@@ -45,6 +45,7 @@ Default sources                               *scratch-runner-default-sources*
     example, if both `deno` and `node` are installed in your system, `deno`
     will be used, since it comes before `node` in the list.
         • Bash (`bash`)
+        • Batch (`cmd`, Windows Only)
         • C (`gcc`, `clang`)
         • C3 (`c3c`)
         • Clojure (`bb`, `clojure`, `lein`)
@@ -53,7 +54,6 @@ Default sources                               *scratch-runner-default-sources*
         • C# (`dotnet` >= 10, `dotnet-script`)
         • D (`dmd`, `gdc`, `ldc`)
         • Dart (`dart`)
-        • Batch (`cmd`, Windows Only)
         • Erlang (`escript`)
         • Fish (`fish`)
         • Fortran (`gfortran`, `flang`, `flang-new`, `ifx`)

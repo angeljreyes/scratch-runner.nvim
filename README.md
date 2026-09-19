@@ -72,6 +72,7 @@ in `PATH`. If you have multiple dependencies installed, the first one found from
 left to right will be used. For example, if both `deno` and `node` are installed in
 your system, `deno` will be used, since it comes before `node` on the list.
 - Bash (`bash`)
+- Batch (`cmd`, Windows Only)
 - C (`gcc`, `clang`)
 - C3 (`c3c`)
 - Clojure (`bb`, `clojure`, `lein`)
@@ -80,7 +81,6 @@ your system, `deno` will be used, since it comes before `node` on the list.
 - C# (`dotnet` >= 10, `dotnet-script`)
 - D (`dmd`, `gdc`, `ldc`)
 - Dart (`dart`)
-- Batch (`cmd`, Windows Only)
 - Erlang (`escript`)
 - Fish (`fish`)
 - Fortran (`gfortran`, `flang`, `flang-new`, `ifx`)
