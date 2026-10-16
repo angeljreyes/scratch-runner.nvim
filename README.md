@@ -226,7 +226,7 @@ it's running. You can see the output of the build steps while they happen and
 even send input to them or to your script, as the result window is just a
 Neovim terminal buffer.
 
-<h2 id="default-config">Default Config</h2>
+## Default Config
 
 ```lua
 ---@class scratch-runner.Config
@@ -242,3 +242,7 @@ H.config = {
     sources = {},
 }
 ```
+
+## Contributing
+If you wanna contribute to the plugin, please read
+[CONTRIBUTING.md](./CONTRIBUTING.md).
