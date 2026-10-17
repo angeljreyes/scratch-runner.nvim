@@ -1,7 +1,7 @@
 # scratch-runner.nvim
 Plugin for quickly adding running capabilities to `snacks.scratch`.
 
-https://github.com/user-attachments/assets/e4fb05e5-ab23-4a6b-a01c-3a7c3ccae4cd
+https://github.com/user-attachments/assets/6473a9c9-56ff-4f6f-bb4a-e0c82ddbe6fd
 
 ## Requirements
 Same requirements as [snacks.nvim](https://github.com/folke/snacks.nvim/tree/main#%EF%B8%8F-requirements) plus the following:
