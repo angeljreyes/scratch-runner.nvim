@@ -138,6 +138,13 @@ your system, `deno` will be used, since it comes before `node` on the list.
 
 ## Usage
 
+When you are in a scratch window, you can press `<CR>` to run the buffer.
+You can also select some lines in visual mode and press `<CR>` to run only the
+selected lines. You can press `q` to cancel the execution of the file while
+it's running. You can see the output of the build steps while they happen and
+even send input to them or to your script, as the result window is just a
+Neovim terminal buffer.
+
 You can use the plugin without any configuration, but if you wish to add a
 language that isn't included in the default list of sources, or if you want to
 override a default source, you can specify your own sources via
@@ -218,13 +225,6 @@ behaving unexpectedly due to the scratch file having an invalid name (e.g. nim o
 D files can't start with a number, which `snacks.nvim` uses for the file name),
 the wrong file extension (e.g. `python` instead of `py`) or having percentage
 signs in the file name.
-
-When you are in a scratch window, you can press `<CR>` to run the buffer.
-You can also select some lines in visual mode and press `<CR>` to run only the
-selected lines. You can press `q` to cancel the execution of the file while
-it's running. You can see the output of the build steps while they happen and
-even send input to them or to your script, as the result window is just a
-Neovim terminal buffer.
 
 ## Default Config
 
