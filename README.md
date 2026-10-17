@@ -95,7 +95,7 @@ your system, `deno` will be used, since it comes before `node` on the list.
 - Clojure (`bb`, `clojure`, `lein`)
 - C++ (`g++`, `clang++`)
 - Crystal (`crystal`)
-- C# (`dotnet` >= 10, `dotnet-script`)
+- C# (`dotnet-script`, `dotnet` >= 10)
 - D (`dmd`, `gdc`, `ldc`)
 - Dart (`dart`)
 - Erlang (`escript`)
